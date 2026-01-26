@@ -2,6 +2,7 @@ package com.framework.driver;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class DriverFactory {
@@ -10,7 +11,14 @@ public class DriverFactory {
 
     public static void initDriver(String browser) {
         if (browser.equalsIgnoreCase("chrome")) {
-            driver.set(new ChromeDriver());
+        	ChromeOptions options = new ChromeOptions();
+        	options.addArguments("--headless=new");
+        	options.addArguments("--no-sandbox");
+        	options.addArguments("--disable-dev-shm-usage");
+
+        //	WebDriver driver = new ChromeDriver(options);
+
+            driver.set(new ChromeDriver(options));
         } else if (browser.equalsIgnoreCase("firefox")) {
             driver.set(new FirefoxDriver());
         } else {
