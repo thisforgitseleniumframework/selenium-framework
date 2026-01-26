@@ -2,6 +2,7 @@ package com.framework.tests;
 
 import com.framework.base.BaseTest;
 import com.framework.pages.LoginPage;
+
 import org.testng.annotations.Test;
 
 public class LoginTest extends BaseTest {
