@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "main" ]
   schedule:
-    - cron: "*/5 0 * * *"   # 6:00 AM IST  
+    - cron: '*/5 * * * *'   # 6:00 AM IST  
 
 permissions:
   contents: read
