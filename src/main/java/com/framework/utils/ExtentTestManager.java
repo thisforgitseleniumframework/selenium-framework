@@ -1,12 +1,10 @@
 package com.framework.utils;
 
-//package com.company.framework.utils;
-
 import com.aventstack.extentreports.ExtentTest;
 
 public class ExtentTestManager {
 
-    private static ThreadLocal<ExtentTest> extentTest = new ThreadLocal<>();
+    private static final ThreadLocal<ExtentTest> extentTest = new ThreadLocal<>();
 
     public static ExtentTest getTest() {
         return extentTest.get();
@@ -14,5 +12,9 @@ public class ExtentTestManager {
 
     public static void setTest(ExtentTest test) {
         extentTest.set(test);
+    }
+
+    public static void removeTest() {
+        extentTest.remove();
     }
 }
