@@ -12,9 +12,13 @@ public class DriverFactory {
     public static void initDriver(String browser) {
         if (browser.equalsIgnoreCase("chrome")) {
         	ChromeOptions options = new ChromeOptions();
-        	options.addArguments("--headless=new");
         	options.addArguments("--no-sandbox");
         	options.addArguments("--disable-dev-shm-usage");
+        	// Run headless when the system property is set (e.g. CI / scheduled jobs)
+        	if (Boolean.parseBoolean(System.getProperty("headless", "false"))) {
+        	    options.addArguments("--headless=new");
+        	    options.addArguments("--window-size=1920,1080");
+        	}
 
         //	WebDriver driver = new ChromeDriver(options);
 
