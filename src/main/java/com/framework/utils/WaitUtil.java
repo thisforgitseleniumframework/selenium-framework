@@ -7,6 +7,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
 public class WaitUtil {
 
@@ -26,5 +27,9 @@ public class WaitUtil {
 
     public boolean waitForUrlContains(String fraction) {
         return wait.until(ExpectedConditions.urlContains(fraction));
+    }
+
+    public List<WebElement> waitForAllVisible(By locator) {
+        return wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(locator));
     }
 }
