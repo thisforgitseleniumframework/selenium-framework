@@ -27,13 +27,26 @@ public class ExtentManager {
             spark.config().setTimeStampFormat("dd MMM yyyy  hh:mm:ss a");
             spark.config().setEncoding("UTF-8");
 
-            // Improve readability of step log entries
+            // Improve readability of step log entries; ensure brand-logo area is visible
             spark.config().setCss(
                 ".step.info  .step-details { border-left: 3px solid #4a90d9; padding-left: 8px; }" +
                 ".step.pass  .step-details { border-left: 3px solid #28a745; padding-left: 8px; }" +
                 ".step.fail  .step-details { border-left: 3px solid #dc3545; padding-left: 8px; }" +
                 ".step.skip  .step-details { border-left: 3px solid #ffc107; padding-left: 8px; }" +
-                ".test-name  { font-weight: 600 !important; font-size: 14px !important; }"
+                ".test-name  { font-weight: 600 !important; font-size: 14px !important; }" +
+                "nav .brand-logo { display: block !important; color: #fff !important; }"
+            );
+
+            // Populate the navbar brand-logo area with the project name
+            String projectName = ConfigReader.get("project.name");
+            spark.config().setJs(
+                "document.addEventListener('DOMContentLoaded', function() {" +
+                "  var brand = document.querySelector('a.brand-logo');" +
+                "  if (brand) {" +
+                "    brand.textContent = '" + projectName + "';" +
+                "    brand.style.cssText += 'font-size:20px;font-weight:700;letter-spacing:0.5px;color:#fff;';" +
+                "  }" +
+                "});"
             );
 
             extent = new ExtentReports();
