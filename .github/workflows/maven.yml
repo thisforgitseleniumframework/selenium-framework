@@ -41,11 +41,11 @@ jobs:
         id: results
         if: always()
         run: |
-          TOTAL=$(grep -oP 'Total Executed\s*:\s*\K[0-9]+' test-output.log || echo "0")
-          PASSED=$(grep -oP 'Passed\s*:\s*\K[0-9]+' test-output.log || echo "0")
-          FAILED=$(grep -oP 'Failed\s*:\s*\K[0-9]+' test-output.log || echo "0")
-          SKIPPED=$(grep -oP 'Skipped\s*:\s*\K[0-9]+' test-output.log || echo "0")
-          RATE=$(grep -oP 'Pass Rate\s*:\s*\K[0-9.]+%' test-output.log || echo "N/A")
+          TOTAL=$(grep -m 1 -oP 'Total Executed\s*:\s*\K[0-9]+' test-output.log || echo "0")
+          PASSED=$(grep -m 1 -oP 'Passed\s*:\s*\K[0-9]+' test-output.log || echo "0")
+          FAILED=$(grep -m 1 -oP 'Failed\s*:\s*\K[0-9]+' test-output.log || echo "0")
+          SKIPPED=$(grep -m 1 -oP 'Skipped\s*:\s*\K[0-9]+' test-output.log || echo "0")
+          RATE=$(grep -m 1 -oP 'Pass Rate\s*:\s*\K[0-9.]+%' test-output.log || echo "N/A")
           BUILD=$(grep -oP '(BUILD SUCCESS|BUILD FAILURE)' test-output.log | tail -1 || echo "UNKNOWN")
           echo "total=$TOTAL"     >> $GITHUB_OUTPUT
           echo "passed=$PASSED"   >> $GITHUB_OUTPUT
