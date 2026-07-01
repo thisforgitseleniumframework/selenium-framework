@@ -85,3 +85,94 @@ jobs:
           echo "| **Pass Rate** | ${{ steps.results.outputs.rate }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Extent Report and Surefire Reports are available in the **Artifacts** section above (retained 30 days)." >> $GITHUB_STEP_SUMMARY
+
+      - name: Send email notification to stakeholders
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          secure: false                       # uses STARTTLS on port 587
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: >-
+            [${{ steps.results.outputs.build }}] OrangeHRM Automation Suite
+            — Run #${{ github.run_number }}
+            (${{ steps.results.outputs.passed }}P /
+             ${{ steps.results.outputs.failed }}F /
+             ${{ steps.results.outputs.skipped }}S)
+          to: ${{ secrets.EMAIL_RECIPIENTS }}
+          from: OrangeHRM Automation <${{ secrets.SMTP_USERNAME }}>
+          html_body: |
+            <html>
+            <body style="font-family:Arial,sans-serif;font-size:14px;color:#333;">
+
+              <h2 style="margin-bottom:4px;">OrangeHRM Automation Suite</h2>
+              <p style="margin-top:0;color:#666;">
+                Run #${{ github.run_number }} &nbsp;|&nbsp;
+                Trigger: <b>${{ github.event_name }}</b> &nbsp;|&nbsp;
+                Branch: <b>${{ github.ref_name }}</b>
+              </p>
+
+              <table border="1" cellpadding="8" cellspacing="0"
+                     style="border-collapse:collapse;min-width:320px;">
+                <thead>
+                  <tr style="background:#333;color:#fff;">
+                    <th style="text-align:left;">Metric</th>
+                    <th style="text-align:left;">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><b>Build Status</b></td>
+                    <td>
+                      ${{ steps.results.outputs.build == 'BUILD SUCCESS'
+                          && '<span style="color:green;font-weight:bold;">BUILD SUCCESS</span>'
+                          ||  '<span style="color:red;font-weight:bold;">BUILD FAILURE</span>' }}
+                    </td>
+                  </tr>
+                  <tr style="background:#f9f9f9;">
+                    <td><b>Total Executed</b></td>
+                    <td>${{ steps.results.outputs.total }}</td>
+                  </tr>
+                  <tr>
+                    <td><b>Passed</b></td>
+                    <td style="color:green;font-weight:bold;">
+                      ${{ steps.results.outputs.passed }}
+                    </td>
+                  </tr>
+                  <tr style="background:#f9f9f9;">
+                    <td><b>Failed</b></td>
+                    <td style="color:${{ steps.results.outputs.failed != '0'
+                                         && 'red' || 'inherit' }};font-weight:bold;">
+                      ${{ steps.results.outputs.failed }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><b>Skipped</b></td>
+                    <td>${{ steps.results.outputs.skipped }}</td>
+                  </tr>
+                  <tr style="background:#f9f9f9;">
+                    <td><b>Pass Rate</b></td>
+                    <td><b>${{ steps.results.outputs.rate }}</b></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <p style="margin-top:20px;">
+                <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                   style="background:#0366d6;color:#fff;padding:8px 16px;
+                          text-decoration:none;border-radius:4px;">
+                  View Full Run on GitHub
+                </a>
+              </p>
+
+              <p style="color:#999;font-size:12px;margin-top:24px;">
+                The Extent Report is attached to this email.<br>
+                It is also available as a downloadable artifact on the GitHub Actions run page
+                for 30 days.
+              </p>
+
+            </body>
+            </html>
+          attachments: target/ExtentReport.html
