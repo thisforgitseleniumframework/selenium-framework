@@ -36,23 +36,25 @@ public class ExtentManager {
                 ".test-name  { font-weight: 600 !important; font-size: 14px !important; }"
             );
 
-            // Inject project name into the navbar.
-            // The Spark template uses div.nav-logo (not a.brand-logo).
-            // The custom JS is placed at the end of <body> via scripts.ftl, so
-            // DOMContentLoaded may have already fired — guard against both states.
+            // Inject project name as the first item in ul.nav-left.
+            // div.nav-logo is sized only for the logo image — appending text there causes wrapping.
+            // ul.nav-left has the horizontal space and is the correct container for nav items.
+            // The custom JS is at the end of <body> (scripts.ftl), so guard readyState.
             String projectName = ConfigReader.get("project.name");
             spark.config().setJs(
                 "(function() {" +
                 "  function injectProjectName() {" +
-                "    var navLogo = document.querySelector('.nav-logo');" +
-                "    if (!navLogo) return;" +
-                "    var brand = document.createElement('a');" +
-                "    brand.href = '#';" +
-                "    brand.textContent = '" + projectName + "';" +
-                "    brand.style.cssText = 'font-size:18px;font-weight:700;color:#fff;" +
-                                           "margin-left:12px;vertical-align:middle;" +
-                                           "line-height:60px;display:inline-block;';" +
-                "    navLogo.appendChild(brand);" +
+                "    var navLeft = document.querySelector('ul.nav-left');" +
+                "    if (!navLeft) return;" +
+                "    var li = document.createElement('li');" +
+                "    li.style.cssText = 'padding:0 16px;white-space:nowrap;';" +
+                "    var span = document.createElement('span');" +
+                "    span.textContent = '" + projectName + "';" +
+                "    span.style.cssText = 'font-size:16px;font-weight:700;color:#fff;" +
+                                          "vertical-align:middle;line-height:60px;" +
+                                          "display:inline-block;letter-spacing:0.4px;';" +
+                "    li.appendChild(span);" +
+                "    navLeft.insertBefore(li, navLeft.firstChild);" +
                 "  }" +
                 "  if (document.readyState === 'loading') {" +
                 "    document.addEventListener('DOMContentLoaded', injectProjectName);" +
