@@ -102,7 +102,7 @@ jobs:
              ${{ steps.results.outputs.failed }}F /
              ${{ steps.results.outputs.skipped }}S)
           to: ${{ secrets.EMAIL_RECIPIENTS }}
-          from: OrangeHRM Automation <${{ secrets.SMTP_USERNAME }}>
+          from: OrangeHRM Automation
           html_body: |
             <html>
             <body style="font-family:Arial,sans-serif;font-size:14px;color:#333;">
