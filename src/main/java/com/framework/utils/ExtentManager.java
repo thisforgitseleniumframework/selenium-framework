@@ -37,16 +37,21 @@ public class ExtentManager {
                 "nav .brand-logo { display: block !important; color: #fff !important; }"
             );
 
-            // Populate the navbar brand-logo area with the project name
+            // Populate the navbar brand-logo area with the project name.
+            // Uses setInterval because Extent Spark renders the navbar dynamically
+            // via its own JS — the a.brand-logo element does not exist at DOMContentLoaded.
             String projectName = ConfigReader.get("project.name");
             spark.config().setJs(
-                "document.addEventListener('DOMContentLoaded', function() {" +
-                "  var brand = document.querySelector('a.brand-logo');" +
-                "  if (brand) {" +
-                "    brand.textContent = '" + projectName + "';" +
-                "    brand.style.cssText += 'font-size:20px;font-weight:700;letter-spacing:0.5px;color:#fff;';" +
-                "  }" +
-                "});"
+                "(function() {" +
+                "  var interval = setInterval(function() {" +
+                "    var brand = document.querySelector('a.brand-logo');" +
+                "    if (brand) {" +
+                "      brand.textContent = '" + projectName + "';" +
+                "      brand.style.cssText += 'font-size:20px;font-weight:700;letter-spacing:0.5px;color:#fff;';" +
+                "      clearInterval(interval);" +
+                "    }" +
+                "  }, 100);" +
+                "})();"
             );
 
             extent = new ExtentReports();
