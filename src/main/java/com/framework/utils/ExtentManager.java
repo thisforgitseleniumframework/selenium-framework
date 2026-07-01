@@ -27,30 +27,38 @@ public class ExtentManager {
             spark.config().setTimeStampFormat("dd MMM yyyy  hh:mm:ss a");
             spark.config().setEncoding("UTF-8");
 
-            // Improve readability of step log entries; ensure brand-logo area is visible
+            // Improve readability of step log entries
             spark.config().setCss(
                 ".step.info  .step-details { border-left: 3px solid #4a90d9; padding-left: 8px; }" +
                 ".step.pass  .step-details { border-left: 3px solid #28a745; padding-left: 8px; }" +
                 ".step.fail  .step-details { border-left: 3px solid #dc3545; padding-left: 8px; }" +
                 ".step.skip  .step-details { border-left: 3px solid #ffc107; padding-left: 8px; }" +
-                ".test-name  { font-weight: 600 !important; font-size: 14px !important; }" +
-                "nav .brand-logo { display: block !important; color: #fff !important; }"
+                ".test-name  { font-weight: 600 !important; font-size: 14px !important; }"
             );
 
-            // Populate the navbar brand-logo area with the project name.
-            // Uses setInterval because Extent Spark renders the navbar dynamically
-            // via its own JS — the a.brand-logo element does not exist at DOMContentLoaded.
+            // Inject project name into the navbar.
+            // The Spark template uses div.nav-logo (not a.brand-logo).
+            // The custom JS is placed at the end of <body> via scripts.ftl, so
+            // DOMContentLoaded may have already fired — guard against both states.
             String projectName = ConfigReader.get("project.name");
             spark.config().setJs(
                 "(function() {" +
-                "  var interval = setInterval(function() {" +
-                "    var brand = document.querySelector('a.brand-logo');" +
-                "    if (brand) {" +
-                "      brand.textContent = '" + projectName + "';" +
-                "      brand.style.cssText += 'font-size:20px;font-weight:700;letter-spacing:0.5px;color:#fff;';" +
-                "      clearInterval(interval);" +
-                "    }" +
-                "  }, 100);" +
+                "  function injectProjectName() {" +
+                "    var navLogo = document.querySelector('.nav-logo');" +
+                "    if (!navLogo) return;" +
+                "    var brand = document.createElement('a');" +
+                "    brand.href = '#';" +
+                "    brand.textContent = '" + projectName + "';" +
+                "    brand.style.cssText = 'font-size:18px;font-weight:700;color:#fff;" +
+                                           "margin-left:12px;vertical-align:middle;" +
+                                           "line-height:60px;display:inline-block;';" +
+                "    navLogo.appendChild(brand);" +
+                "  }" +
+                "  if (document.readyState === 'loading') {" +
+                "    document.addEventListener('DOMContentLoaded', injectProjectName);" +
+                "  } else {" +
+                "    injectProjectName();" +
+                "  }" +
                 "})();"
             );
 
